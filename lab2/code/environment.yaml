@@ -1,0 +1,14 @@
+name: 215a
+channels:
+  - defaults
+dependencies:
+  - python
+  - pip:
+    - numpy
+    - pandas
+    - geopandas
+    - matplotlib
+    - seaborn
+    - scikit-learn
+    - jupyterlab
+    - pyreadr
