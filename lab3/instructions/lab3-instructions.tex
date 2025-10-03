@@ -1,0 +1,149 @@
+\documentclass[letterpaper,12pt]{article}
+% reduce margins
+\usepackage[margin=0.5in]{geometry}
+% remove indent
+\setlength\parindent{0pt}
+\setlength{\parskip}{1em}
+% reduce toc spacing
+\usepackage{tocloft}
+\setlength{\cftbeforesecskip}{0.5em}
+% make toc show subsubsections
+\setcounter{tocdepth}{3}
+% remove section numbering
+\setcounter{secnumdepth}{1}
+
+% reduce section, subsection, etc spacing
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{0\baselineskip}{0\baselineskip}
+\titlespacing*{\subsection}{0pt}{0\baselineskip}{0\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{0\baselineskip}{0\baselineskip}
+
+%reduce list spacing
+\usepackage{enumitem}
+\setlist{nosep}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{graphicx}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\title{Lab 3 - Parallelizing $k$-means, Stat 215A, Fall 2025\vspace{-2em}}
+\date{}
+
+\begin{document}
+\maketitle
+
+These are the \textbf{lab3-specific} instructions. Please also see the general lab instructions in \textbf{lab-instructions.pdf}.
+
+\tableofcontents
+
+\section{Submission}
+Push a folder called \texttt{lab3} to your \texttt{stat-215-a GitHub} repository by \textbf{23:59 on Saturday, October 18th}. I will run a script that will pull from each of your GitHub repositories promptly at midnight so take care not to be late as late labs will not be accepted.
+
+\textbf{Follow the general lab instructions in stat-215-a-gsi/general/week1/lab-instructions.pdf for more details.} Please do not try to make your lab fit the requirements at the last minute!
+
+I have provided a template (both \texttt{.tex} and \texttt{.ipynb}) as a guideline for the writeup. Since the template is intended to make grading easier, please do not deviate from it significantly without good reason. In your \texttt{lab3} folder, please provide everything (except the \texttt{lingBinary} data) that is needed for someone else to be able to compile your report and receive the exact same pdf.
+
+\subsection{Special coding instructions}
+In this lab, you will graded more carefully than usual on your code. As always, please follow a style guide like PEP-8 or the Google Python style guide. Make sure your variable names are meaningful, write comments liberally, and document your functions. Please also provide all scripts necessary to reproduce your results, includes any .py or .sh scripts used to run your code on the SCF, as well as the \texttt{S.csv} result file. Pay very close attention to the instructions below about \texttt{similarity.py}.
+
+\section{Academic honesty}
+
+\subsection{Academic honesty statement}
+
+You can use your statement from lab1 or lab2.
+
+\subsection{Collaboration policy}
+
+You are welcome to discuss ideas with me or other students, but your report must be written up and completed individually. If you do consult with other students, you must acknowledge these students in your lab report.
+
+\subsection{LLM usage policy}
+
+You are allowed to use LLMs (ChatGPT, GitHub Copilot, etc.) to help with the \textbf{coding} and writing for this lab per usual. However since coding is the primary part of this lab, there are more specific disclosure requirements.  If you use an LLM to help with coding, you must do the following:
+\begin{itemize}
+    \item At the end of the report in the appropriate section (see template), state which tool(s) you employed and for what parts of the coding.
+    \item Describe the nature of your interactions with the LLM. e.g. did you ask ChatGPT to code things in English? Did you use Copilot by writing a comment then tab-completing individual lines? Did you get Copilot to write whole functions? Did you mostly use LLMs for debugging? For writing comments? etc.
+    \item If you used a prompt-based LLM like ChatGPT, add a link to your ChatGPT session, e.g. \url{https://chatgpt.com/share/f7a9094a-9eda-47a0-9103-4aa6345284b0}.
+    \item Describe your experience with the process. Is it a good experience? Did it save you time? Did the code end up better or worse than if you had written it yourself? Do you fully understand the code that these LLMs produce? Do you want to use it again for similar projects?
+\end{itemize}
+
+
+\section{What you need to do}
+
+We will be investigating the stability of $k$-means using a popular procedure outlined in Ben-Hur et al. which uses stability as a guide for picking $k$. The procedure is outlined in Algorithm 1. You should consult the paper for more details, particularly consulting the similarity measures you can use.
+
+\begin{algorithm}[h]
+    \caption{Calculation of clustering similarities in $k$-means}
+    % for k from 2 to K
+    \begin{algorithmic}
+        \State \textbf{Input:} $X$, $k_\mathrm{max}$, $B$
+        \State \textbf{Output:} $S$
+        \For{$k = 2$ to $k_\mathrm{max}$}
+            \For{$i = 1$ to $B$}
+                \State $\mathrm{sub}_1 \leftarrow \mathrm{subsample(X,m)}$, a subsample of fraction $m$ of dataset $X$
+                \State $\mathrm{sub}_2 \leftarrow \mathrm{subsample(X,m)}$, a subsample of fraction $m$ of dataset $X$
+                \State $L_1\leftarrow\mathrm{cluster}(\mathrm{sub}_1,k)$
+                \State $L_2\leftarrow\mathrm{cluster}(\mathrm{sub}_1,k)$
+                \State $\mathrm{intersect}\leftarrow\mathrm{sub}_1\cap\mathrm{sub}_2$
+                \State $S_{i,k}\leftarrow\mathrm{similarity}(L_1(\mathrm{intersect}),L_2(\mathrm{intersect}))$
+            \EndFor
+        \EndFor
+        \State \Return $S$
+    \end{algorithmic}
+\end{algorithm}
+
+In this lab, you will be implementing this method on the binary-coded linguistic data from Lab 2. Please use the \texttt{LingBinary.Rdata} file included in this lab to ensure consistency (note: only use its binary columns!). Set the maximum number of clusters to consider: $k_{\mathrm{max}}=10$; the number of repeated iterations: $B=100$; and the sampling proportion, $m$ as large as you can get it while also running in a reasonable time ($m$ should be no less than 0.2, no more than 0.8). This will require a decent amount of computation, so you should try to run this in parallel on the SCF cluster
+
+\subsection{Similarity implementation}
+
+First, choose a similarity measure to use, and explain why you chose it.
+
+To compute the similarity of clusterings, you will (in theory) be dealing with a $q\times q$ matrix, where $q$ is the number of data points that are common to each subsample (if $m = 0.8$, $q$ will be approximately $29000$, meaning that the similarity matrix, $C$, will be a 6GB matrix). This could be prohibitively large. For the following questions, you can use any similarity measure mentioned in the paper: correlation, Jaccard, matching.
+
+Write a Python function called \texttt{similarity} to calculate the similarity between two membership vectors. At \textbf{bare minimum}, the function should complete in a reasonable time for inputs of size 5000. Write this function in a file called \texttt{similarity.py} in the \texttt{code} folder. This is how your function will be evaluated:
+\begin{enumerate}
+    \item Your function should take two membership vectors as input and return a single number (a scalar) as output.
+    \item Of course, your function must return the correct similarity value for the given membership vectors.
+    \item Can you avoid storing the entire $q\times q$ matrix in memory?
+    \item Is your algorithm efficient? The most obvious way to calculate similarity is $O(q^2)$, but you can do better!
+    \item Did you try to speed-up the function by compiling it with Numba or Cython?
+    \item I will benchmark your function on my own machine on randomly generated membership vectors with $k=10$, first with $q=5000$ and then with $q=29000$, and compare its runtime with a reference implementation. I have written an $O(q^2)$ implementation of Jaccard similarity which (on my machine) runs in $0.32\mathrm{s}$ for $q=29000$. I have also written a smarter implementation which (on my machine) runs in $58\mu \mathrm{s}$ ($5.8\times 10^{-5}$ seconds) for $q=29000$. Note that any speed differences between my machine and yours are probably less than an order of magnitude, so on your laptop (or SCF or whatever) you should be able to get it down to $1\textrm{ms}$ or so. Also note that speeds roughly this good can be achieved for any of the similarity measures, not just Jaccard. I'll be looking at the order of magnitude of your implementation's runtime. I have provided a \texttt{benchmark.py} script in the \texttt{code} folder which you can use to benchmark your function in the same (or similar) way as I will when grading.
+\end{enumerate}
+Discuss your algorithm for the similarity function. Did you use any clever algorithmic tricks to speed up the computation? If you were able to avoid storing the $q\times q$ matrix in memory, how did you do it? Were you able to make the algorithm faster than $O(q^2)$? If so, what is an $O$-notation expression for its runtime?
+
+Discuss your Python implementation---how did you get the runtime down?
+
+Discuss the timing of your implementation of the similarity function when applied to the \texttt{lingBinary.Rdata} for various choices of $m$. A figure is very good for this! If you kept some different versions of your similarity function, it would be especially cool to see a comparison of different implementations (e.g.~Numba vs Cython vs pure Python, or different algorithms) for different values of $m$.
+
+PS: Don't worry if you aren't able to get the runtime down super low! Making it better than $O(q^2)$ in particular is pretty tricky. But if you get it super low you will get a very good grade in this portion of the lab.
+
+\subsection{Parallel implementation of Algorithm 1}
+Implement Algorithm 1, using your fastest implementation of the similarity function to compute the similarity. You can use the $k$-means implementation of some Python library.
+
+To speed up computation, parallelize using \texttt{joblib} (or something else if you would like). You can choose whether to parallelize the outer or inner for loop---will one work better? Run your job with the \texttt{lingBinary.Rdata} on the SCF cluster using \texttt{sbatch}. You must save the resulting S matrix (or dataframe) as a .csv file in a folder named \texttt{results/}.
+
+See the following reference for detailed instruction on using the cluster: \url{http://statistics.berkeley.edu/computing/servers/}. If you do not have an SCF account, you will need to request one by going to \url{https://scf.berkeley.edu/account}
+
+Here is what you should document in this section:
+\begin{enumerate}
+    \item How did you choose the parameters for $k$-means (other than $k$)? (the library you used probably has a bunch of parameters in its implementation of $k$-means).
+    \item Did you parallelize the inner or outer for loop? Why?
+    \item How long did it take for your code to run on the SCF cluster?
+    \item How many cores did you use? Why?
+\end{enumerate}
+
+Note: You should \textbf{not} run Algorithm 1 in your \texttt{lab1.ipynb} (if you are using a notebook for your report). Good lab submissions will have a separate Python script for Algorithm 1.
+
+\subsection{Result}
+Make a plot similar to Figure 3 in Ben-Hur et al. Discuss the plot. What would you pick as $k$ for this dataset and why? Do you trust this method? Why or why not? Do you have any ideas for a different method to choose $k$?
+
+You should discuss these points in detail---certainly more than a few sentences.
+
+Note: You can and should make a much more attractive figure than their Figure 3.
+
+\end{document}

@@ -1,0 +1,90 @@
+%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{xcolor}
+
+% define math shortcuts
+\DeclareMathOperator{\x}{\mathbf{x}}
+\DeclareMathOperator{\y}{\mathbf{y}}
+\DeclareMathOperator{\uu}{\mathbf{u}}
+\DeclareMathOperator{\vv}{\mathbf{v}}
+\DeclareMathOperator{\rr}{\mathbf{r}}
+\DeclareMathOperator{\U}{\mathbf{U}}
+\DeclareMathOperator{\V}{\mathbf{V}}
+\DeclareMathOperator{\A}{\mathbf{A}}
+\DeclareMathOperator{\M}{\mathbf{M}}
+\DeclareMathOperator{\N}{\mathbf{N}}
+\DeclareMathOperator{\D}{\mathbf{D}}
+\DeclareMathOperator{\Q}{\mathbf{Q}}
+\DeclareMathOperator{\I}{\mathbf{I}}
+\DeclareMathOperator{\X}{\mathbf{X}}
+\DeclareMathOperator{\W}{\mathbf{W}}
+\DeclareMathOperator{\HH}{\mathbf{H}}
+\DeclareMathOperator{\R}{\mathbf{R}}
+\DeclareMathOperator{\real}{\mathbb{R}}
+\DeclareMathOperator{\Xhat}{\vphantom{\mathbf{X}} \smash[t]{\hat{\mathbf{X}}}}
+\DeclareMathOperator{\Xbar}{\vphantom{\mathbf{X}} \smash[t]{\bar{\mathbf{X}}}}
+\DeclareMathOperator{\bbeta}{\boldsymbol{\beta}}
+\DeclareMathOperator{\mmu}{\boldsymbol{\mu}}
+\DeclareMathOperator{\llambda}{\boldsymbol{\lambda}}
+\DeclareMathOperator{\Lam}{\boldsymbol{\Lambda}}
+\DeclareMathOperator{\Delt}{\boldsymbol{\Delta}}
+\DeclareMathOperator{\Sig}{\boldsymbol{\Sigma}}
+\DeclareMathOperator{\Thet}{\boldsymbol{\Theta}}
+\DeclareMathOperator*{\argmin}{\mathrm{argmin} ~ }
+\DeclareMathOperator*{\argmax}{\mathrm{argmax} ~ }
+\DeclareMathOperator{\Var}{\text{Var}}
+\newcommand{\norm}[1]{\lVert #1  \rVert}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\newlength{\lyxlabelwidth}      % auxiliary length 
+
+\@ifundefined{date}{}{\date{}}
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{Homework 3\linebreak{}
+Stat 215A, Fall 2025}
+\maketitle
+\begin{center}
+\textbf{Due:} submit on \textbf{Gradescope} by \textbf{Saturday, October 18 23:59} \\
+\par\end{center}
+
+\section{Ordinary Least Squares}
+
+Suppose that we observe our usual data matrix $\X \in \real^{n \times p}$ and response vector $\y \in \real^n$, where $n$ is the number of samples/observations and $p$ is the number of features. Suppose also that $\X$ has rank $p < n$. Under this setting, the ordinary least squares (OLS) estimator is given by
+
+\begin{align*}
+\hat{\bbeta}_{OLS} = \argmin_{\bbeta} \norm{\y - \X \bbeta}_2^2.
+\end{align*}
+
+\begin{enumerate}
+\item Provide an expression for $\hat{\bbeta}_{OLS}$ in terms of $\X$ and $\y$ by solving the optimization problem above. Why do we require the assumption that $\text{rank}(\X) = p < n$?
+\item Show that the OLS predictions $\hat{\y} = \X \hat{\bbeta}_{OLS}$ can be written as $\hat{\y} = \HH \y$, where $\HH^2 = \HH$.
+%\item How can we interpret $\HH$ using projections?
+\item Prove that the residuals $\hat{\rr} = \y - \hat{\y}$ are orthogonal to the OLS predictions $\hat{\y}$. Draw a picture to show what this means geometrically.
+\end{enumerate}
+
+\section{Miscellaneous}
+
+What was the original motivation for the development of the Ridge regression algorithm? What was the original motivation for the development of the LASSO algorithm?
+
+\end{document}
