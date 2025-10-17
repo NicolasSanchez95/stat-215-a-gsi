@@ -1,0 +1,17 @@
+name: env_215a
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    - torch==2.1.0
+    - torchvision==0.16.0
+    - torchaudio==2.1.0
+    - numpy
+    - pandas
+    - matplotlib
+    - seaborn
+    - scikit-learn
+    - jupyterlab
